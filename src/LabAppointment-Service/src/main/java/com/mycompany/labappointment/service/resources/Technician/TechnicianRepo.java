@@ -5,6 +5,8 @@
 package com.mycompany.labappointment.service.resources.Technician;
 
 import com.mycompany.labappointment.service.resources.Db.DBUtils;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,7 +28,7 @@ public class TechnicianRepo {
 
     public boolean addTechnician(Technician technician) {
         try {
-            try (Connection conn = dbConn.GetConnection(); 
+            try (Connection conn = dbConn.getConnection(); 
                     PreparedStatement stmt = conn.prepareStatement(
                             "INSERT INTO Technicians (FirstName, LastName, ContactNumber, Email, UserName, Password) VALUES (?, ?, ?, ?, ?, ?);",
                             Statement.RETURN_GENERATED_KEYS)) {
@@ -53,7 +55,7 @@ public class TechnicianRepo {
 
     public Technician getTechnicianByID(int technicianID) {
         try {
-            try (Connection conn = dbConn.GetConnection(); 
+            try (Connection conn = dbConn.getConnection(); 
                     PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Technicians WHERE TechnicianID = ?")) {
                 stmt.setInt(1, technicianID);
                 ResultSet rs = stmt.executeQuery();
@@ -79,7 +81,7 @@ public class TechnicianRepo {
 
     public boolean updateTechnician(Technician technician) {
         try {
-            try (Connection conn = dbConn.GetConnection(); 
+            try (Connection conn = dbConn.getConnection(); 
                     PreparedStatement stmt = conn.prepareStatement(
                             "UPDATE Technicians SET FirstName = ?, LastName = ?, ContactNumber = ?, Email = ?, UserName = ?, Password = ? WHERE TechnicianID = ?")) {
                 stmt.setString(1, technician.getFirstName());
@@ -102,7 +104,7 @@ public class TechnicianRepo {
 
     public boolean deleteTechnician(int technicianID) {
         try {
-            try (Connection conn = dbConn.GetConnection(); 
+            try (Connection conn = dbConn.getConnection(); 
                     PreparedStatement stmt = conn.prepareStatement("DELETE FROM Technicians WHERE TechnicianID = ?")) {
                 stmt.setInt(1, technicianID);
                 int rowsDeleted = stmt.executeUpdate();
@@ -119,7 +121,7 @@ public class TechnicianRepo {
     public List<Technician> getAllTechnicians() {
         List<Technician> technicians = new ArrayList<>();
         try {
-            try (Connection conn = dbConn.GetConnection(); 
+            try (Connection conn = dbConn.getConnection(); 
                     Statement stmt = conn.createStatement()) {
                 ResultSet rs = stmt.executeQuery("SELECT * FROM Technicians");
                 while (rs.next()) {
@@ -141,5 +143,41 @@ public class TechnicianRepo {
         }
         return technicians;
     }
+    
+    public boolean login(String userName, String password) {
+        try {
+            try (Connection conn = dbConn.getConnection(); 
+                    PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT UserName, Password FROM Patients WHERE UserName = ? AND Password = ?")) {
+                stmt.setString(1, userName);
+                
+                String encryptedPassword = encryptPassword(password);
+                stmt.setString(2, encryptedPassword);
+                
+                //stmt.setString(2, password);
+                ResultSet rs = stmt.executeQuery();
+                return rs.next(); // If there is a matching record, return true
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private String encryptPassword(String password) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hash = digest.digest(password.getBytes());
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : hash) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
+}
 }
 
