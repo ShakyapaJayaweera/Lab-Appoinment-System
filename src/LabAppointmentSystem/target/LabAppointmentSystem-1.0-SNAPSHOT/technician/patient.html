@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <title>Lab Appointment System - Patient</title>
+    <title>Lab Apointment System - Patient</title>
     <meta content="" name="description">
     <meta content="" name="keywords">
 
@@ -57,7 +57,7 @@
     <header id="header" class="fixed-top">
         <div class="container d-flex align-items-center">
 
-            <h1 class="logo me-auto"><a href="index.html">Lab Appointment System</a></h1>
+            <h1 class="logo me-auto"><a href="index.html">Lab Apointment System</a></h1>
             <nav id="navbar" class="navbar order-last order-lg-0">
                 <ul>
                     <li><a class="nav-link scrollto" href="index.html">Home</a></li>
@@ -65,7 +65,7 @@
                     <li><a class="nav-link scrollto" href="doctor.html">Doctor</a></li>
                     <li><a class="nav-link scrollto" href="test.html">Test</a></li>
                     <li><a class="nav-link scrollto" href="apointment.html">Apointment</a></li>
-                    <li><a class="nav-link scrollto" href="report.html">Report</a></li>
+                    <li><a class="nav-link scrollto" href="testresult.html">Test Result</a></li>
                 </ul>
                 <i class="bi bi-list mobile-nav-toggle"></i>
             </nav><!-- .navbar -->
@@ -168,7 +168,8 @@
                                 <th>User Name</th>
                                 <th>Action</th>
                             </thead>
-                            <tbody id="tbody"> </tbody>
+                            <tbody id="tbody">
+                            </tbody>
                         </table>
                     </div>
 
@@ -210,9 +211,9 @@
 
                                         <div class="col-lg-6">
                                             <select class="form-control" name="Gender" id="Gender" required>
-                                                <option value="Male">Male</option>
-                                                <option value="Female">Female</option>
-                                                <option value="Other">Other</option>
+                                                <option value="MALE">Male</option>
+                                                <option value="FEMALE">Female</option>
+                                                <option value="OTHER">Other</option>
                                             </select>
                                         </div>
                                     </div>
@@ -267,7 +268,7 @@
 
             <div class="me-md-auto text-center text-md-start">
                 <div class="copyright">
-                    &copy; Copyright <strong><span>Lab Appointment System</span></strong>. All Rights Reserved
+                    &copy; Copyright <strong><span>Lab Apointment System</span></strong>. All Rights Reserved
                 </div>
                 <div class="credits">
                     Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
@@ -346,7 +347,6 @@
                     if (response.ok) {
                         swal("Patient adding successfully!", "", "success")
                             .then(() => {
-                                getAllPatients();
                                 window.location.href = "patient.html#viewPatient";
                             });
                     } else {
@@ -367,6 +367,7 @@
                     const tbody = document.getElementById('tbody');
                     // Clear existing table rows
                     tbody.innerHTML = '';
+
                     // Iterate over the data and create a row for each patient
                     data.forEach(patient => {
                         const tr = document.createElement('tr');
@@ -381,8 +382,8 @@
                         <td>${patient.address}</td>
                         <td>${patient.userName}</td>
                         <td>
-                            <button class='btn btn-outline-warning' onclick='PatientEdit(${patient.patientID})'><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button class='btn btn-outline-danger' onclick='PatientDelete(${patient.patientID})'><i class="fa-solid fa-trash"></i></button>
+                            <button onclick='PatientEdit(${patient.patientID})'><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick='PatientDelete(${patient.patientID})'><i class="fa-solid fa-trash"></i></button>
                         </td> `;
                         tbody.appendChild(tr);
                     });
@@ -453,7 +454,7 @@
                     document.getElementById('Email').value = data.email;
                     document.getElementById('Address').value = data.address;
                     document.getElementById('UserName').value = data.userName;
-                    //document.getElementById('Password').value = data.password;
+                    document.getElementById('Password').value = data.password;
                     document.getElementById('patientID').value = data.patientID;
 
                     // Hide the 'Add Patient' button and show the 'Update Patient' button
@@ -493,7 +494,6 @@
                     if (response.ok) {
                         swal("Patient Update successfully!", "", "success")
                             .then(() => {
-                                getAllPatients();
                                 document.getElementById('labelAdd').innerText = 'Add New Patient';
                                 document.getElementById('registerButton').style.display = 'block';
                                 document.getElementById('updateButton').style.display = 'none';

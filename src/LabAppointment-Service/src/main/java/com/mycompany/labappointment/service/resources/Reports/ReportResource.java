@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -48,6 +49,24 @@ public class ReportResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
+    
+    @GET
+    @Path("getbyapointment/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getReportByApointmentId(@PathParam("id") int id) {
+        try {
+            ReportRepo reportRepo = new ReportRepo();
+            Report report = reportRepo.getReportByApointmentId(id);
+            if (report != null) {
+                return Response.ok(gson.toJson(report)).build();
+            }
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } catch (Exception e) {
+            logger.error("Failed to get report by ID: " + id, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
